@@ -1,0 +1,23 @@
+{
+  "name": "ilk-mcp-projem",
+  "version": "1.1.0",
+  "description": "Profesyonel MCP Dosya Yönetim Sunucusu",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx index.ts"
+  },
+  "keywords": [],
+  "author": "Aykan Kömürcü",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.22.4",
+    "typescript": "^5.3.3"
+  }
+}
