@@ -1,3 +1,5 @@
+import { tavily } from "@tavily/core";
+import "dotenv/config";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
@@ -96,6 +98,36 @@ server.tool(
       await fs.writeFile(tamYol, baslik + kod, "utf-8");
       return {
         content: [{ type: "text", text: `Kod dosyası oluşturuldu: ${tamYol}` }],
+      };
+    } catch (error: unknown) {
+      const hataMesaji = error instanceof Error ? error.message : String(error);
+      return { content: [{ type: "text", text: `Hata: ${hataMesaji}` }], isError: true };
+    }
+  }
+);
+
+// 5. Web'de ara
+server.tool(
+  "web_ara",
+  "İnternette arama yapar ve sonuçları döndürür.",
+  {
+    sorgu: z.string().describe("Aranacak konu veya soru"),
+    sonucSayisi: z.number().default(3).describe("Kaç sonuç dönsün (1-5)")
+  },
+  async ({ sorgu, sonucSayisi }) => {
+    try {
+      const client = tavily({ apiKey: process.env.TAVILY_API_KEY! });
+      const yanit = await client.search(sorgu, {
+        maxResults: sonucSayisi,
+        searchDepth: "basic"
+      });
+
+      const sonuclar = yanit.results.map((r, i) =>
+        `${i + 1}. ${r.title}\n   ${r.url}\n   ${r.content?.slice(0, 200)}...`
+      ).join("\n\n");
+
+      return {
+        content: [{ type: "text", text: `"${sorgu}" için sonuçlar:\n\n${sonuclar}` }],
       };
     } catch (error: unknown) {
       const hataMesaji = error instanceof Error ? error.message : String(error);
